@@ -4,37 +4,42 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 import streamlit.components.v1 as components
+from dotenv import load_dotenv
+import os
+import toml
 
-#para dev
-# config = toml.load(".toml")
-# google_sheet_id = toml.load('google_sheet_id')
-# nombre_google_sheet_hoja = toml.load('nombre_google_sheet_hoja')
-# type = toml.load('type')
-# project_id = toml.load('project_id')
-# private_key_id = toml.load('private_key_id')
-# private_key = toml.load('private_key')
-# client_email = toml.load('client_email')
-# client_id = toml.load('client_id')
-# auth_uri = toml.load('auth_uri')
-# token_uri = toml.load('token_uri')
-# auth_provider_x509_cert_url = toml.load('auth_provider_x509_cert_url')
-# client_x509_cert_url = toml.load('client_x509_cert_url')
-# universe_domain = toml.load('universe_domain')
+load_dotenv()
+ENV = os.getenv('ENVIRONMENT', 'prod')
 
-# Para prod
-google_sheet_id = st.secrets["google_sheet_id"] 
-nombre_google_sheet_hoja = st.secrets["nombre_google_sheet_hoja"]
-type = st.secrets["type"]
-project_id = st.secrets['project_id']
-private_key_id = st.secrets['private_key_id']
-private_key = st.secrets['private_key']
-client_email = st.secrets['client_email']
-client_id = st.secrets['client_id']
-auth_uri = st.secrets['auth_uri']
-token_uri = st.secrets['token_uri']
-auth_provider_x509_cert_url = st.secrets['auth_provider_x509_cert_url']
-client_x509_cert_url = st.secrets['client_x509_cert_url']
-universe_domain = st.secrets['universe_domain']
+if ENV == 'dev':
+    config = toml.load("config.toml")
+    google_sheet_id = config['google_sheet_id']
+    nombre_google_sheet_hoja = config['nombre_google_sheet_hoja']
+    type = config['type']
+    project_id = config['project_id']
+    private_key_id = config['private_key_id']
+    private_key = config['private_key']
+    client_email = config['client_email']
+    client_id = config['client_id']
+    auth_uri = config['auth_uri']
+    token_uri = config['token_uri']
+    auth_provider_x509_cert_url = config['auth_provider_x509_cert_url']
+    client_x509_cert_url = config['client_x509_cert_url']
+    universe_domain = config['universe_domain']
+else:
+    google_sheet_id = st.secrets["google_sheet_id"] 
+    nombre_google_sheet_hoja = st.secrets["nombre_google_sheet_hoja"]
+    type = st.secrets["type"]
+    project_id = st.secrets['project_id']
+    private_key_id = st.secrets['private_key_id']
+    private_key = st.secrets['private_key']
+    client_email = st.secrets['client_email']
+    client_id = st.secrets['client_id']
+    auth_uri = st.secrets['auth_uri']
+    token_uri = st.secrets['token_uri']
+    auth_provider_x509_cert_url = st.secrets['auth_provider_x509_cert_url']
+    client_x509_cert_url = st.secrets['client_x509_cert_url']
+    universe_domain = st.secrets['universe_domain']
 
 client = dict({
     'type': type,

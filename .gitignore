@@ -1,2 +1,3 @@
 *.toml
 local only config.toml/
+*.env
