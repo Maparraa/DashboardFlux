@@ -90,7 +90,9 @@ st.markdown(
 st.markdown('<h1 class="title">Dashboard Insights</h1>', unsafe_allow_html=True)
 
 iframe = """
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
 <iframe width="900" height="530" src="https://lookerstudio.google.com/embed/reporting/f31cd527-df04-429a-8c4a-f5f32882d4ee/page/p_wa0b5m3tid" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+</div>
 """ 
 
 components.html(iframe, width=910, height=540)
