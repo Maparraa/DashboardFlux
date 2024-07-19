@@ -159,18 +159,17 @@ fig.update_layout(
 if selected_cecos:
     for ceco in selected_cecos:
         ceco_data = df_transformado[df_transformado['Ceco'] == ceco]
-        for index, row in ceco_data.iterrows():
-            fig.add_trace(go.Scatter(
-                x=[row['Tiempo']],
-                y=[row['Valor']],
+        fig.add_trace(go.Scatter(
+                x= ceco_data['Tiempo'],
+                y= ceco_data['Valor'],
                 mode='markers',
-                marker=dict(color='red', size=6),
-                text=[ceco],
+                #marker=dict(color='red', size=6),
+                text= ceco_data['Ceco'],
                 textposition='top center',
                 name=ceco,
                 visible=True,
-                showlegend= False
-            ))
+                showlegend= True
+        ))
 
 # Mostrar el gráfico en Streamlit
 st.plotly_chart(fig)
