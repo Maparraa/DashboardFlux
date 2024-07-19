@@ -98,18 +98,38 @@ selected_portfolios = st.multiselect(
 # Dropdown para seleccionar CeCos
 selected_cecos = st.multiselect(
     'Selecciona CeCo...',
-    options=df_transformado['Ceco'].unique()
+    options= df_transformado[df_transformado['Portafolio'].isin(selected_portfolios)]['Ceco'].unique()
 )
+
+outliers_y_n = st.checkbox(
+    'Desea ver los outliers',
+    value= True
+)
+
+all_points = st.checkbox(
+    'Desea ver todos los proyectos con puntos en el gráfico',
+    value= False
+)
+
+if(all_points):
+    puntos = 'all'
+else:
+    if(outliers_y_n):
+        puntos = 'outliers'
+    else:
+        puntos = False
 
 # Filtrar datos según la selección de portfolios
 mask = df_transformado[df_transformado['Portafolio'].isin(selected_portfolios)]
 tiempos = mask['Tiempo'].unique()
 meta_filtrada = {k: meta[k] for k in tiempos if k in meta}
 metas_filtradas = list(meta_filtrada.values())
+max_y = mask['Valor'].max()
+range_y = [0, max_y + 15] if max_y <= 300 else [0, 300]
 
 # Crear el gráfico
-fig = px.box(mask, x='Tiempo', y='Valor', points='outliers', hover_data=['Ceco'], color= 'Portafolio',
-             color_discrete_map={'Portafolio 1': '#19439B', 'Portafolio 2': '#146CFD', 'Portafolio 3': '#00B7D7'})
+fig = px.box(mask, x='Tiempo', y='Valor', points= puntos, hover_data=['Ceco'], color= 'Portafolio',
+             color_discrete_map={'Portafolio 1': '#19439B', 'Portafolio 2': '#146CFD', 'Portafolio 3': '#00B7D7'}, range_y=range_y, labels={'Valor': 'Días'})
 
 #fig.update_traces(
 #    marker_color='#072C54',
