@@ -103,7 +103,7 @@ selected_cecos = st.multiselect(
 
 outliers_y_n = st.checkbox(
     'Desea ver los outliers',
-    value= True
+    value= False
 )
 
 all_points = st.checkbox(
