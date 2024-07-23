@@ -13,7 +13,7 @@ ENV = os.getenv('ENVIRONMENT', 'prod')
 
 if ENV == 'dev':
     config = toml.load("config.toml")
-    google_sheet_id = config['google_sheet_id']
+    google_sheet_id = config['google_sheet_id_CI']
     nombre_google_sheet_hoja = config['nombre_google_sheet_hoja']
     type = config['type']
     project_id = config['project_id']
@@ -27,7 +27,7 @@ if ENV == 'dev':
     client_x509_cert_url = config['client_x509_cert_url']
     universe_domain = config['universe_domain']
 else:
-    google_sheet_id = st.secrets["google_sheet_id"] 
+    google_sheet_id = st.secrets["google_sheet_id_CI"] 
     nombre_google_sheet_hoja = st.secrets["nombre_google_sheet_hoja"]
     type = st.secrets["type"]
     project_id = st.secrets['project_id']

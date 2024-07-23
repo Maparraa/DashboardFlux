@@ -12,7 +12,7 @@ ENV = os.getenv('ENVIRONMENT', 'prod')
 
 if ENV == 'dev':
     config = toml.load("config.toml")
-    google_sheet_id = config['google_sheet_id_CI']
+    google_sheet_id = config['google_sheet_id_Res']
     nombre_google_sheet_hoja = config['nombre_google_sheet_hoja']
     type = config['type']
     project_id = config['project_id']
@@ -26,7 +26,7 @@ if ENV == 'dev':
     client_x509_cert_url = config['client_x509_cert_url']
     universe_domain = config['universe_domain']
 else:
-    google_sheet_id = st.secrets["google_sheet_id_CI"] 
+    google_sheet_id = st.secrets["google_sheet_id_Res"] 
     nombre_google_sheet_hoja = st.secrets["nombre_google_sheet_hoja"]
     type = st.secrets["type"]
     project_id = st.secrets['project_id']
@@ -40,7 +40,7 @@ else:
     client_x509_cert_url = st.secrets['client_x509_cert_url']
     universe_domain = st.secrets['universe_domain']
 
-meta = {'Gestión Comercial': 28,'RTE: Ready to Engineering': 14,'Desarrollo Ingeniería': 14,'Revisión Ingeniería': 14,'RTB: Ready to Build': 45,'Construcción': 87,'Gestión Certificación': 21,'Declaración SEC': 21,'Gestión Tramitación': 14,'Validación Planta Dx': 21,'Conexión de Planta': 21}
+meta = {'Cot - Reserva': 10,'Reserva - Informe': 10,'Informe - Firma contrato': 10,'Firma contrato - Adecuaciones': 45,'Adecuaciones - Fin Instalación': 15,'Fin instalación - Ingreso TE-4': 2,'Ingreso TE-4 - TE-4 inscrito': 13,'TE-4 Inscrito - Ingreso F5': 2,'Ingreso F5 - PC (F6)': 13}
 
 client = dict({
     'type': type,
@@ -63,15 +63,15 @@ worksheet = spreadsheet.worksheet(nombre_google_sheet_hoja)
 # Obtener datos de Google Sheets
 data = worksheet.get_all_values()
 df = pd.DataFrame(data[1:], columns=data[0])
-df = df[df['Portafolio'] != '']
-df_transformado = pd.melt(df, id_vars=['Ceco', 'Portafolio'], var_name='Tiempo', value_name='Valor')
+df = df[df['Año cotización'] != '']
+df_transformado = pd.melt(df, id_vars=['Ceco', 'Año cotización'], var_name='Tiempo', value_name='Valor')
 df_transformado = df_transformado[pd.to_numeric(df_transformado['Valor'], errors='coerce').notnull()]
 df_transformado['Valor'] = df_transformado['Valor'].str.replace('.', '').str.replace(',', '.').astype(float)
 
 # Convertir la columna "Tiempo" a un tipo categórico con un orden específico
 df_transformado['Tiempo'] = pd.Categorical(df_transformado['Tiempo'], categories=data[0][2:], ordered=True)
-list_portfolio = df_transformado['Portafolio'].unique().copy()
-list_portfolio.sort()
+list_year_cotizacion = df_transformado['Año cotización'].unique().copy()
+list_year_cotizacion.sort()
 
 st.set_page_config(page_title="Dashboard Flux", page_icon="☀", layout="wide")
 
@@ -86,19 +86,19 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.markdown('<h1 class="title">Boxplot etapas C&I</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="title">Boxplot etapas Residencial</h1>', unsafe_allow_html=True)
 
 # Checklist para seleccionar portfolios
-selected_portfolios = st.multiselect(
-    'Selecciona Portafolios',
-    options=list_portfolio,
-    default=['Portafolio 3']
+selected_years = st.multiselect(
+    'Selecciona Año cotización',
+    options=list_year_cotizacion,
+    default=['2024']
 )
 
 # Dropdown para seleccionar CeCos
 selected_cecos = st.multiselect(
     'Selecciona CeCo...',
-    options= df_transformado[df_transformado['Portafolio'].isin(selected_portfolios)]['Ceco'].unique()
+    options= df_transformado[df_transformado['Año cotización'].isin(selected_years)]['Ceco'].unique()
 )
 
 outliers_y_n = st.checkbox(
@@ -120,16 +120,16 @@ else:
         puntos = False
 
 # Filtrar datos según la selección de portfolios
-mask = df_transformado[df_transformado['Portafolio'].isin(selected_portfolios)]
+mask = df_transformado[df_transformado['Año cotización'].isin(selected_years)]
 tiempos = mask['Tiempo'].unique()
 meta_filtrada = {k: meta[k] for k in tiempos if k in meta}
 metas_filtradas = list(meta_filtrada.values())
 max_y = mask['Valor'].max()
-range_y = [0, max_y + 15] if max_y <= 300 else [0, 300]
+range_y = [0, max_y + 15] if max_y <= 150 else [0, 150]
 
 # Crear el gráfico
-fig = px.box(mask, x='Tiempo', y='Valor', points= puntos, hover_data=['Ceco'], color= 'Portafolio',
-             color_discrete_map={'Portafolio 1': '#19439B', 'Portafolio 2': '#146CFD', 'Portafolio 3': '#00B7D7'}, range_y=range_y, labels={'Valor': 'Días'})
+fig = px.box(mask, x='Tiempo', y='Valor', points= puntos, hover_data=['Ceco'], color= 'Año cotización',
+             color_discrete_map={'2024': '#146CFD', '2023': '#00B7D7'}, range_y=range_y, labels={'Valor': 'Días'})
 
 #fig.update_traces(
 #    marker_color='#072C54',
@@ -151,7 +151,7 @@ fig.add_trace(go.Scatter(
 fig.update_layout(
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
-    title={'text': "Boxplot etapas C&I", 'x': 0.5, 'xanchor': 'center'},
+    title={'text': "Boxplot etapas Residencial", 'x': 0.5, 'xanchor': 'center'},
     width=2000,
     height=700  
 )
